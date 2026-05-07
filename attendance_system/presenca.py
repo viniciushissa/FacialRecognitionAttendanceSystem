@@ -224,9 +224,10 @@ def view_summary():
 def main_menu(database: dict):
     while True:
         header("Menu Principal")
-        print(f"  {AnsiColors.CYAN}[1]{AnsiColors.RESET}  📷  Registrar presenças de hoje (câmera)")
+        print(f"  {AnsiColors.CYAN}[1]{AnsiColors.RESET}  📝  Registrar presenças de hoje (câmera)")
         print(f"  {AnsiColors.CYAN}[2]{AnsiColors.RESET}  📅  Ver presenças por dia")
         print(f"  {AnsiColors.CYAN}[3]{AnsiColors.RESET}  📊  Resumo geral de frequência")
+        print(f"  {AnsiColors.CYAN}[4]{AnsiColors.RESET}  📸  Cadastrar novo aluno")
         print(f"  {AnsiColors.CYAN}[0]{AnsiColors.RESET}  ❌  Sair")
         print(LINE)
 
@@ -238,11 +239,88 @@ def main_menu(database: dict):
             view_attendance_by_day()
         elif choice == "3":
             view_summary()
+        elif choice == "4":
+            database = registernewface(database)
         elif choice == "0":
             print(f"\n  {AnsiColors.DIM}Até logo!{AnsiColors.RESET}\n")
             break
         else:
             print(f"  {AnsiColors.RED}Opção inválida. Tente novamente.{AnsiColors.RESET}")
+
+def registernewface(database: dict, samples=8):
+    name = input("Nome do aluno: ").strip()
+    if not name:
+        print("Nome inválido.")
+        return database
+
+    person_dir = os.path.join("facesdb", name)
+    os.makedirs(person_dir, exist_ok=True)
+
+    cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
+    if not cap.isOpened():
+        print("Não foi possível abrir a webcam.")
+        return database
+
+    saved = 0
+    frame_count = 0
+
+    print("Olhe para a câmera. Pressione ESC para cancelar.")
+
+    while saved < samples:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        detections = yolo_detect_faces(frame, conf=0.5)
+
+        if detections:
+            detections.sort(key=lambda d: (d[2]-d[0]) * (d[3]-d[1]), reverse=True)
+            x1, y1, x2, y2, conf = detections[0]
+
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(frame, f"Amostras: {saved}/{samples}", (20, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,0), 2)
+
+            frame_count += 1
+            if frame_count % 10 == 0:
+                face = frame[y1:y2, x1:x2]
+                if face.size > 0:
+                    img_path = os.path.join(person_dir, f"{saved+1}.jpg")
+                    cv2.imwrite(img_path, face)
+                    saved += 1
+
+        cv2.imshow("Cadastro facial", frame)
+
+        if cv2.waitKey(1) & 0xFF == 27:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    if saved == 0:
+        print("Nenhuma face cadastrada.")
+        return database
+
+    database[name] = []
+    for file_name in os.listdir(person_dir):
+        img_path = os.path.join(person_dir, file_name)
+        img = cv2.imread(img_path)
+        if img is None:
+            continue
+
+        detections = yolo_detect_faces(img, conf=0.4)
+        if not detections:
+            continue
+
+        detections.sort(key=lambda d: (d[2]-d[0]) * (d[3]-d[1]), reverse=True)
+        feat = extract_embedding(img, detections[0])
+        database[name].append(feat)
+
+    from postgres import upsert_student
+    upsert_student(name)
+
+    print(f"{name} cadastrado com {len(database[name])} embeddings.")
+    return database
 
 
 if __name__ == "__main__":
