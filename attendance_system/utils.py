@@ -1,0 +1,10 @@
+class AnsiColors:
+    RESET  = "\033[0m"
+    BOLD   = "\033[1m"
+    GREEN  = "\033[92m"
+    CYAN   = "\033[96m"
+    YELLOW = "\033[93m"
+    RED    = "\033[91m"
+    WHITE  = "\033[97m"
+    DIM    = "\033[2m"
+    BG_BLUE  = "\033[44m"
