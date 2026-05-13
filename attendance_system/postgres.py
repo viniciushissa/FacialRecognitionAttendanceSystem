@@ -42,7 +42,6 @@ def init_db():
                 CREATE INDEX IF NOT EXISTS idx_attendance_date
                     ON attendance (session_date);
             """)
-            cur.execute("ALTER DATABASE attendance_system_db SET timezone TO 'America/Sao_Paulo';")
         conn.commit()
     print(f"{AnsiColors.GREEN}✔ Banco de dados inicializado com sucesso.{AnsiColors.RESET}")
 
