@@ -20,10 +20,10 @@ Sistema de registro de presença automático baseado em reconhecimento facial, d
 FacialRecognitionAttendanceSystem/
 ├── attendance_system/
 │   ├── faces_db/
-    │    ├── nome_do_aluno_1/     # Uma pasta por aluno com fotos de referência
-    │    │   │   ├── foto1.jpg
-    │    │   │   └── foto2.jpg
-    │    │   └── nome_do_aluno_2/
+│   │    ├── nome_do_aluno_1/     # Uma pasta por aluno com fotos de referência
+│   │    │   │   ├── foto1.jpg
+│   │    │   │   └── foto2.jpg
+│   │    │   └── nome_do_aluno_2/
 │   ├── presenca.py          # Ponto de entrada e interface de terminal
 │   ├── utils.py             # Cores do terminal
 │   └── postgres.py          # Camada de banco de dados
