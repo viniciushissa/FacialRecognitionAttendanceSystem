@@ -16,6 +16,10 @@ def get_connection():
             user=os.getenv('POSTGRES_USER'),
             password=os.getenv('POSTGRES_PASSWORD')
         )
+
+        with conn.cursor() as cur:
+            cur.execute("SET TIME ZONE 'America/Sao_Paulo';")
+
         return conn
     except Exception as e:
         print(f"Erro ao conectar ao banco de dados: {e}")
