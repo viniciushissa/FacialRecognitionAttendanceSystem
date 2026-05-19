@@ -1,12 +1,12 @@
 # 🎓 Facial Recognition Attendance System
 
-Sistema de registro de presença automático baseado em reconhecimento facial, desenvolvido em Python. Utiliza **YOLOv8** para detecção de rostos e **SFace** para reconhecimento, com persistência em **PostgreSQL** e interface de terminal colorida.
+Sistema de registro de presença automático baseado em reconhecimento facial, desenvolvido em Python. Utiliza **YOLOv8** para detecção de rostos e **SFace** para cadastro e reconhecimento, com persistência em **PostgreSQL** e interface de terminal colorida.
 
 ---
 
 ## ✨ Funcionalidades
 
-- 📷 **Registro automático via webcam** — detecta e reconhece rostos em tempo real, gravando a presença com data e horário exato
+- 📷 **Registro automático via webcam** — cadastra, detecta e reconhece rostos em tempo real, gravando a presença com data e horário exato
 - 📅 **Consulta por dia** — visualize todos os alunos presentes em qualquer aula já registrada
 - 📊 **Resumo de frequência** — relatório completo com total de presenças e barra de progresso por aluno
 - 🛡️ **Anti-duplicata** — cada aluno é registrado apenas uma vez por dia, independentemente de quantas vezes aparecer na câmera
@@ -19,13 +19,14 @@ Sistema de registro de presença automático baseado em reconhecimento facial, d
 ```
 FacialRecognitionAttendanceSystem/
 ├── attendance_system/
+│   ├── faces_db/
+    │    ├── nome_do_aluno_1/     # Uma pasta por aluno com fotos de referência
+    │    │   │   ├── foto1.jpg
+    │    │   │   └── foto2.jpg
+    │    │   └── nome_do_aluno_2/
 │   ├── presenca.py          # Ponto de entrada e interface de terminal
+│   ├── utils.py             # Cores do terminal
 │   └── postgres.py          # Camada de banco de dados
-├── faces_db/                # Criada automaticamente ao iniciar
-│   ├── nome_do_aluno_1/     # Uma pasta por aluno com fotos de referência
-│   │   ├── foto1.jpg
-│   │   └── foto2.jpg
-│   └── nome_do_aluno_2/
 ├── docker-compose.yaml      # PostgreSQL via Docker
 ├── requirementes.txt        # Dependências Python
 └── .gitignore
@@ -80,9 +81,9 @@ POSTGRES_PORT=5432
 docker compose up -d
 ```
 
-### 5. Adicione os alunos ao banco de faces
+### 5. Adicione os alunos ao banco de faces ou Cadastre novos alunos
 
-Crie uma pasta dentro de `faces_db/` com o nome do aluno e coloque algumas fotos dele:
+Se quiser adicionar manualmente, crie uma pasta dentro de `faces_db/` com o nome do aluno e coloque algumas fotos dele:
 
 ```
 faces_db/
@@ -107,9 +108,10 @@ python presenca.py
 ║              SISTEMA DE PRESENÇAS                    ║
 ║                  Menu Principal                      ║
 ╠══════════════════════════════════════════════════════╣
-║  [1]  📷  Registrar presenças de hoje (câmera)       ║
+║  [1]  📝  Registrar presenças de hoje (câmera)       ║
 ║  [2]  📅  Ver presenças por dia                      ║
 ║  [3]  📊  Resumo geral de frequência                 ║
+║  [4]  📷  Cadastrar novo aluno                       ║
 ║  [0]  ❌  Sair                                       ║
 ╚══════════════════════════════════════════════════════╝
 ```
