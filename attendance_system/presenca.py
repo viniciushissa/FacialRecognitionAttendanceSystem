@@ -253,7 +253,7 @@ def registernewface(database: dict, samples=8):
         print("Nome inválido.")
         return database
 
-    person_dir = os.path.join("facesdb", name)
+    person_dir = os.path.join("faces_db", name)
     os.makedirs(person_dir, exist_ok=True)
 
     cap = cv2.VideoCapture(0, cv2.CAP_V4L2)
